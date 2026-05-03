@@ -29,6 +29,7 @@ steps:
 
 - script: |
     pip install pytest
+    export PYTHONPATH=$(pwd)
     pytest -q
   displayName: 'Run unit tests'
 
@@ -38,4 +39,5 @@ steps:
     appName: 'teo-flask-ml'
     package: '.'
   displayName: 'Deploy to Azure App Service'
+
 
