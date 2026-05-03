@@ -7,13 +7,35 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+
+variables:
+  pythonVersion: '3.10'
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(pythonVersion)'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    pip install flake8
+    flake8 .
+  displayName: 'Run linting'
+
+- script: |
+    pip install pytest
+    pytest -q
+  displayName: 'Run unit tests'
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'azure-sp-connection'
+    appName: 'teo-flask-ml'
+    package: '.'
+  displayName: 'Deploy to Azure App Service'
+
